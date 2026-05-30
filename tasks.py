@@ -17,17 +17,24 @@ def save_tasks(tasks):
         json.dump(tasks, f, indent=2)
 
 
-def add_task(title):
+PRIORITIES = ("high", "medium", "low")
+
+
+def add_task(title, priority="medium"):
+    if priority not in PRIORITIES:
+        print(f"Invalid priority '{priority}'. Choose: {', '.join(PRIORITIES)}")
+        return
     tasks = load_tasks()
     task = {
         "id": len(tasks) + 1,
         "title": title,
+        "priority": priority,
         "done": False,
         "created": datetime.now().isoformat(),
     }
     tasks.append(task)
     save_tasks(tasks)
-    print(f"Added task #{task['id']}: {title}")
+    print(f"Added task #{task['id']} [{priority}]: {title}")
 
 
 def list_tasks():
@@ -37,7 +44,8 @@ def list_tasks():
         return
     for t in tasks:
         status = "x" if t["done"] else " "
-        print(f"[{status}] #{t['id']} {t['title']}")
+        priority = t.get("priority", "medium")
+        print(f"[{status}] #{t['id']} [{priority}] {t['title']}")
 
 
 def complete_task(task_id):
@@ -66,13 +74,20 @@ def main():
 
     if len(sys.argv) < 2:
         print("Usage: python tasks.py <command> [args]")
-        print("Commands: add <title>, list, done <id>, delete <id>")
+        print("Commands: add <title> [--priority high|medium|low], list, done <id>, delete <id>")
         return
 
     cmd = sys.argv[1]
 
     if cmd == "add" and len(sys.argv) > 2:
-        add_task(" ".join(sys.argv[2:]))
+        # optional --priority flag: add Buy milk --priority high
+        args = sys.argv[2:]
+        priority = "medium"
+        if "--priority" in args:
+            idx = args.index("--priority")
+            priority = args[idx + 1]
+            args = args[:idx] + args[idx + 2:]
+        add_task(" ".join(args), priority)
     elif cmd == "list":
         list_tasks()
     elif cmd == "done" and len(sys.argv) > 2:

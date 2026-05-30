@@ -17,6 +17,25 @@ def test_add_task(capsys):
     tasks.add_task("Test task")
     out = capsys.readouterr().out
     assert "Added task #1" in out
+    assert "[medium]" in out
+
+
+def test_add_task_with_priority(capsys):
+    tasks.add_task("Urgent thing", priority="high")
+    out = capsys.readouterr().out
+    assert "[high]" in out
+    assert tasks.load_tasks()[0]["priority"] == "high"
+
+
+def test_add_task_invalid_priority(capsys):
+    tasks.add_task("Bad task", priority="urgent")
+    assert tasks.load_tasks() == []
+
+
+def test_list_shows_priority(capsys):
+    tasks.add_task("Low item", priority="low")
+    tasks.list_tasks()
+    assert "[low]" in capsys.readouterr().out
 
 
 def test_list_empty(capsys):
