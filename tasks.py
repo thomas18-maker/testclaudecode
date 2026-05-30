@@ -74,7 +74,7 @@ def main():
 
     if len(sys.argv) < 2:
         print("Usage: python tasks.py <command> [args]")
-        print("Commands: add <title> [--priority high|medium|low], list, done <id>, delete <id>")
+        print("Commands: add <title> [--priority high|medium|low], list, done|complete <id>, delete <id>")
         return
 
     cmd = sys.argv[1]
@@ -90,7 +90,7 @@ def main():
         add_task(" ".join(args), priority)
     elif cmd == "list":
         list_tasks()
-    elif cmd == "done" and len(sys.argv) > 2:
+    elif cmd in ("done", "complete") and len(sys.argv) > 2:
         complete_task(int(sys.argv[2]))
     elif cmd == "delete" and len(sys.argv) > 2:
         delete_task(int(sys.argv[2]))
